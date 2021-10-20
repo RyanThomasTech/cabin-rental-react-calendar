@@ -1,0 +1,30 @@
+.cal-month {
+  width: 100%;
+  height: 132px;
+}
+
+.cal-row:after {
+  clear: both;
+  content: "";
+  display:table;
+}
+
+.square {
+  background: #fff;
+  border: 1px solid #bbb;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 132px;
+  margin-right: -1px;
+  margin-top: -1px;
+  padding: 0;
+  text-align: center;
+  width: 132px;
+}
+
+.square.active {
+  border: 1px solid #222;
+  z-index: 999;
+}
