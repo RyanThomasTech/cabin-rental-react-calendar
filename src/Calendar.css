@@ -1,6 +1,24 @@
 .cal-month {
   width: 100%;
   height: 132px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.month-name {
+  font-size: 54px;
+}
+
+.change-month-button {
+  background: #fff;
+  border: 1px solid #bbb;
+  font-size: 24px;
+  height: 48px;
+  width: 48px;
+  padding: 0;
+  text-align: center;
+  float: left;
 }
 
 .cal-row:after {
@@ -24,7 +42,13 @@
   width: 132px;
 }
 
+.date-numeral {
+  float: left;
+  margin: 2px;
+  left: 0;
+  top: 0;
+}
+
 .square.active {
   border: 1px solid #222;
-  z-index: 999;
 }
