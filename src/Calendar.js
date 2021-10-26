@@ -13,12 +13,26 @@ function Square(props) {
     );
 }
 
+function YearSelect(props){
+    return(
+        <div className='yearSelect-container'>
+            <input type='number' id='year-input' onChange={props.onChange} value={props.year}></input>
+        </div>
+    )
+}
+
 function MonthBar(props){
     const monthLabelArr = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     return(
-        <div className='cal-month'>
+        <div className='cal-header'>
             <button className='change-month-button' onClick={props.decrementMonth}>&larr;</button>
-            <span className='month-name'>{monthLabelArr[props.month]}</span>
+            <div className='month-year'>
+                <span className='month-name'>{monthLabelArr[props.month]}</span>
+                <YearSelect 
+                    year={props.year}
+                    onChange={props.onYearChange}
+                />
+            </div>
             <button className='change-month-button' onClick={props.incrementMonth}>&rarr;</button>
         </div>
     );
@@ -48,6 +62,11 @@ class Calendar extends React.Component {
                 dayNumber={dayNumeral}
             />
         );
+    }
+
+    handleYearOnChange(event){
+        const selectedValue = event.target.value;
+        this.handleSelectDate(selectedValue, this.state.renderedMonth);
     }
 
     handleSelectDate(year,month){
@@ -98,6 +117,8 @@ class Calendar extends React.Component {
                     month={this.state.renderedMonth}
                     decrementMonth={()=>this.handleMonthChangeButton(-1)}
                     incrementMonth={()=>this.handleMonthChangeButton(1)}
+                    onYearChange={(e)=>this.handleYearOnChange(e)}
+                    year={this.state.renderedYear}
                 />
                 <div className='cal-days'>
                     {cal}
