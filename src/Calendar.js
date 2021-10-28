@@ -39,14 +39,6 @@ function MonthBar(props){
 }
 
 class Calendar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            squares: Array(42).fill(null),
-            renderedYear: new Date().getFullYear(),
-            renderedMonth: new Date().getMonth(),
-        };
-    }
 
     renderSquare(i, dayNumeral){
         let className = 'square';
@@ -57,16 +49,16 @@ class Calendar extends React.Component {
         return(
             <Square
                 value={this.state.squares[i]}
-                onClick={()=>this.handleClick(i)}
+                onClick={this.handleClick(i)}
                 className={className}
                 dayNumber={dayNumeral}
             />
         );
     }
 
-    handleYearOnChange(event){
+    handleOnYearChange(event){
         const selectedValue = event.target.value;
-        this.handleSelectDate(selectedValue, this.state.renderedMonth);
+        this.handleSelectDate(selectedValue, this.props.renderedMonth);
     }
 
     handleSelectDate(year,month){
@@ -77,8 +69,8 @@ class Calendar extends React.Component {
     }
 
     handleMonthChangeButton(deltaM){
-        let month = this.state.renderedMonth + deltaM;
-        let year = this.state.renderedYear;
+        let month = this.props.renderedMonth + deltaM;
+        let year = this.props.renderedYear;
         if (month > 11){
             month = month - 12;
             year++;
@@ -89,15 +81,9 @@ class Calendar extends React.Component {
         this.handleSelectDate(year, month);
     }
 
-    handleClick(i){
-        let squares = this.state.squares.slice();
-        squares[i] = 'clicked!';
-        this.setState({squares: squares});
-    }
-
     render(){
-        let firstDayOfMonth = new Date(this.state.renderedYear, this.state.renderedMonth,1).getDay();   
-        let lengthOfMonth = new Date(this.state.renderedYear, this.state.renderedMonth+1, 0).getDate();
+        let firstDayOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth,1).getDay();   
+        let lengthOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth+1, 0).getDate();
         let cal= [];
         let squareNum = 0;
         for (let rowNum = 0; rowNum<6; rowNum++){
@@ -114,11 +100,11 @@ class Calendar extends React.Component {
         return(
             <div className='calendar'>
                 <MonthBar 
-                    month={this.state.renderedMonth}
+                    month={this.props.renderedMonth}
                     decrementMonth={()=>this.handleMonthChangeButton(-1)}
                     incrementMonth={()=>this.handleMonthChangeButton(1)}
-                    onYearChange={(e)=>this.handleYearOnChange(e)}
-                    year={this.state.renderedYear}
+                    onYearChange={(e)=>this.handleOnYearChange(e)}
+                    year={this.props.renderedYear}
                 />
                 <div className='cal-days'>
                     {cal}
