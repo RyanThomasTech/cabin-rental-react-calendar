@@ -39,6 +39,13 @@ function MonthBar(props){
 }
 
 class Calendar extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            squares: Array(42).fill(null),
+        }
+
+    }
 
     renderSquare(i, dayNumeral){
         let className = 'square';
@@ -49,23 +56,28 @@ class Calendar extends React.Component {
         return(
             <Square
                 value={this.state.squares[i]}
-                onClick={this.handleClick(i)}
+                onClick={this.handleClick.bind(this, i)}
                 className={className}
                 dayNumber={dayNumeral}
             />
         );
     }
 
-    handleOnYearChange(event){
-        const selectedValue = event.target.value;
-        this.handleSelectDate(selectedValue, this.props.renderedMonth);
+    handleClick(i){
+        let squares = this.state.squares.slice();
+        squares[i] = 'clicked!';
+        this.setState({squares: squares});
+
+        const firstDayOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth,1).getDay();
+        const outputDate = new Date(this.props.renderedYear, this.props.renderedMonth, i - firstDayOfMonth + 1);
+        this.props.setSelectedDate(outputDate);
+        
     }
 
-    handleSelectDate(year,month){
-        this.setState({
-            renderedYear: year,
-            renderedMonth: month
-        })
+    handleOnYearChange(event){
+        const selectedYear = event.target.value;
+        const outputDate = new Date(selectedYear, this.props.renderedMonth);
+        this.props.setSelectedDate(outputDate);
     }
 
     handleMonthChangeButton(deltaM){
@@ -78,7 +90,8 @@ class Calendar extends React.Component {
             month = month + 12;
             year--;
         }
-        this.handleSelectDate(year, month);
+        const outputDate = new Date(year,month);
+        this.props.setSelectedDate(outputDate);
     }
 
     render(){

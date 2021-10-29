@@ -10,18 +10,18 @@ class App extends React.Component {
     this.state = {
       renderedYear: startDate.getFullYear(),
       renderedMonth: startDate.getMonth(),
-      squares: Array(42).fill(null),
     }
 
-    this.handleClick = this.handleClick.bind(this);
-  }
-  
-  handleClick(i){
-      let squares = this.state.squares.slice();
-      squares[i] = 'clicked!';
-      this.setState({squares: squares});
+    this.setSelectedDate = this.setSelectedDate.bind(this);
   }
 
+  setSelectedDate(dateObj){
+    this.setState({
+      renderedYear: dateObj.getFullYear(),
+      renderedMonth: dateObj.getMonth(),
+    })
+  }
+  
   render(){
     return (
       <div className="App">
@@ -31,7 +31,7 @@ class App extends React.Component {
         <Calendar 
           renderedYear={this.state.renderedYear}
           renderedMonth={this.state.renderedMonth}
-          onClickSquare={this.handleClick(i)}
+          setSelectedDate={this.setSelectedDate}
         />
       </div>
     );
