@@ -7,7 +7,7 @@ function Square(props) {
         <button className={props.className} onClick={props.onClick}>
             <span className='day-data'>
                 <span className='date-numeral'>{props.dayNumber}</span>
-                <span className='rented'>{props.value}</span>
+                <span className='rented'></span>
             </span>
         </button>
     );
@@ -42,9 +42,10 @@ class Calendar extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            squares: Array(42).fill(null),
+            squares: Array(42).fill(0),
         }
 
+        this.handleClick = this.handleClick.bind(this);
     }
 
     renderSquare(i, dayNumeral){
@@ -65,12 +66,12 @@ class Calendar extends React.Component {
 
     handleClick(i){
         let squares = this.state.squares.slice();
-        squares[i] = 'clicked!';
+        squares[i] = ++squares[i];
         this.setState({squares: squares});
 
         const firstDayOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth,1).getDay();
         const outputDate = new Date(this.props.renderedYear, this.props.renderedMonth, i - firstDayOfMonth + 1);
-        this.props.setSelectedDate(outputDate);
+        this.props.setSelectedDate(outputDate, squares[i]);
         
     }
 
