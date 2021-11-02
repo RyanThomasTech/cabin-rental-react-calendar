@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Calendar from './Calendar';
 import './Calendar.css';
+import Sidebar from './Sidebar';
 
 class App extends React.Component {
   constructor(props) {
@@ -15,10 +16,12 @@ class App extends React.Component {
     this.setSelectedDate = this.setSelectedDate.bind(this);
   }
 
-  setSelectedDate(dateObj){
+  setSelectedDate(dateObj, clickCount){
     this.setState({
       renderedYear: dateObj.getFullYear(),
       renderedMonth: dateObj.getMonth(),
+      selectedDay: dateObj.getDate(),
+      lastClickedSquareVal: clickCount,
     })
   }
   
@@ -28,11 +31,18 @@ class App extends React.Component {
         <header className="App-header">
           <div>A calendar app</div>
         </header>
-        <Calendar 
-          renderedYear={this.state.renderedYear}
-          renderedMonth={this.state.renderedMonth}
-          setSelectedDate={this.setSelectedDate}
-        />
+        <div className="App-body">
+          <Calendar 
+            renderedYear={this.state.renderedYear}
+            renderedMonth={this.state.renderedMonth}
+            setSelectedDate={this.setSelectedDate}
+          />
+          <Sidebar
+            selectedDay={this.state.selectedDay}
+            renderedMonth={this.state.renderedMonth}
+            lastClickedSquareVal={this.state.lastClickedSquareVal}
+          />
+        </div>
       </div>
     );
   }
