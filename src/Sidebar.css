@@ -1,0 +1,12 @@
+.sidebar{
+    margin: 20px;
+    min-width: 400px;
+    background-color:aqua;
+}
+
+.login-container{
+    background-color:pink;
+    float: right;
+    margin-top: -20px;
+    font-size: 16px;
+}
