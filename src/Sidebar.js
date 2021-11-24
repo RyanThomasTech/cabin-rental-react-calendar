@@ -12,9 +12,10 @@ class Sidebar extends React.Component{
                 </div>
                 <div className='date-info-container'>
                     {
+                        //TODO: currently not rendered due to props change
                         this.props.selectedDay > 0 && 
                         <div className='focused-day'>
-                            currently focusing {monthLabelArr[this.props.renderedMonth]} {this.props.selectedDay}, this square has been clicked {this.props.lastClickedSquareVal} times;
+                            currently focusing {monthLabelArr[this.props.selectedDate.getMonth()]} {this.props.selectedDate.getDate()};
                         </div>
                     }
                 </div>

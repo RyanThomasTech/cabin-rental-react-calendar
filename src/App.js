@@ -9,19 +9,88 @@ class App extends React.Component {
     super(props);
     const startDate = new Date();
     this.state = {
-      renderedYear: startDate.getFullYear(),
-      renderedMonth: startDate.getMonth(),
+      selectedDate: startDate,
+      rentals: Array(this.getRentalArrayLength(startDate)).fill(0),
     }
 
     this.setSelectedDate = this.setSelectedDate.bind(this);
   }
 
-  setSelectedDate(dateObj, clickCount){
+  getRentalArrayLength(dateObj){
+    const threeMonthLength = (
+      new Date(dateObj.getFullYear(),dateObj.getMonth(),0).getDate() +
+      new Date(dateObj.getFullYear(),dateObj.getMonth()+1,0).getDate() +
+      new Date(dateObj.getFullYear(),dateObj.getMonth()+2,0).getDate()
+    );
+    return threeMonthLength;
+  }
+
+  componentDidMount(){
+    this.fetchDataByMonth();
+  }
+
+  fetchDataByMonth(/*dateObj*/){
+    //TODO: grab rentals by specific timeframe only
+    fetch('http://localhost:8080/rentals')
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw response;
+    })
+    .then((jsonArr) => {
+      this.handleRentalsData(jsonArr)
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+  }
+
+  handleRentalsData(jsonArr){
+    const currentMonth = this.state.selectedDate.getMonth();
+    const currentMonthLength = new Date(this.state.selectedDate.getFullYear(), currentMonth+1, 0).getDate();
+    const prevMonth = (currentMonth-1 + 12) % 12;
+    const prevMonthLength = new Date(this.state.selectedDate.getFullYear(), currentMonth, 0).getDate();
+    const nextMonth = (currentMonth+1 + 12) % 12;
+    let rentals = Array(this.getRentalArrayLength(this.state.selectedDate)).fill(0);
+   
+    for (const rentalObj of jsonArr){
+      const rentalDate = new Date(rentalObj.date);
+      switch(rentalDate.getMonth()){
+        case (prevMonth):
+          rentals[rentalDate.getDate()-1] = rentalObj;
+          break;
+        case (currentMonth):
+          rentals[rentalDate.getDate()-1+prevMonthLength] = rentalObj;
+          break;
+        case (nextMonth):
+          rentals[rentalDate.getDate()-1+prevMonthLength+currentMonthLength] = rentalObj;
+          break;
+        default:
+          console.log("Todo: tests and error handling")
+          break;
+      }
+    };
+
+    const daysIncludedFromPrevMonth = new Date(this.state.selectedDate.getFullYear(), currentMonth, 1).getDay();
+    const daysIncludedFromNextMonth = 7-(new Date(this.state.selectedDate.getFullYear(), currentMonth+1, 1).getDay());
+
+    //TODO: test this math
+    rentals = rentals.slice(prevMonthLength-daysIncludedFromPrevMonth, prevMonthLength-daysIncludedFromPrevMonth+(6*7)+1);
+
     this.setState({
-      renderedYear: dateObj.getFullYear(),
-      renderedMonth: dateObj.getMonth(),
-      selectedDay: dateObj.getDate(),
-      lastClickedSquareVal: clickCount,
+      rentals: rentals,
+    })
+  }
+
+  setSelectedDate(dateObj){
+    //TODO: fetch month-specific data
+    if (dateObj.getMonth() !== this.state.selectedDate.getMonth() ||
+      dateObj.getFullYear() !== this.state.selectedDate.getFullYear() ){
+      this.fetchDataByMonth();
+    }
+    this.setState({
+      selectedDate: dateObj,
     })
   }
   
@@ -33,14 +102,12 @@ class App extends React.Component {
         </header>
         <div className="App-body">
           <Calendar 
-            renderedYear={this.state.renderedYear}
-            renderedMonth={this.state.renderedMonth}
+            selectedDate={this.state.selectedDate}
             setSelectedDate={this.setSelectedDate}
+            rentals={this.state.rentals}
           />
           <Sidebar
-            selectedDay={this.state.selectedDay}
-            renderedMonth={this.state.renderedMonth}
-            lastClickedSquareVal={this.state.lastClickedSquareVal}
+            selectedDate={this.state.selectedDate}
           />
         </div>
       </div>

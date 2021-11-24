@@ -55,6 +55,10 @@
   background: #fff;
 }
 
+.square.rented {
+  background: #b2b;
+}
+
 .date-numeral {
   float: left;
   margin: 2px;

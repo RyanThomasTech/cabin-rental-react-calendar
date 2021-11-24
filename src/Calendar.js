@@ -42,15 +42,44 @@ class Calendar extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            squares: Array(42).fill(0),
+            squares: Array(6*7).fill(0),
         }
 
         this.handleClick = this.handleClick.bind(this);
     }
 
+    componentDidMount(){
+        const rentals = this.props.rentals.slice();
+        const newSquares = rentals.map(el => {
+            return ((typeof el === 'object') ? 1 : 0);
+        })
+
+        this.setState({
+            squares: newSquares,
+        })
+    }
+
+    componentDidUpdate(prevProps){
+        if (prevProps.rentals !== this.props.rentals){
+            const rentals = this.props.rentals.slice();
+            const newSquares = rentals.map(el => {
+                return ((typeof el === 'object') ? 1 : 0);
+            })
+            console.log("updated");
+
+            this.setState({
+                squares: newSquares,
+            })
+        }
+
+    }
+
     renderSquare(i, dayNumeral){
         let className = 'square';
-        if (dayNumeral > 0){
+        if (this.state.squares[i] > 0){
+            className += ' rented';
+        }
+        else if (dayNumeral > 0){
             className += ' active';
         }
 
@@ -65,42 +94,37 @@ class Calendar extends React.Component {
     }
 
     handleClick(i){
-        let squares = this.state.squares.slice();
-        squares[i] = ++squares[i];
-        this.setState({squares: squares});
-
-        const firstDayOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth,1).getDay();
-        const outputDate = new Date(this.props.renderedYear, this.props.renderedMonth, i - firstDayOfMonth + 1);
-        this.props.setSelectedDate(outputDate, squares[i]);
+        const firstDayOfMonth = new Date(this.props.selectedDate.getFullYear(), this.props.selectedDate.getMonth(),1).getDay();
+        const outputDate = new Date(this.props.selectedDate.getFullYear(), this.props.selectedDate.getMonth(), i - firstDayOfMonth + 1);
+        this.props.setSelectedDate(outputDate);
         
     }
 
     handleOnYearChange(event){
         const selectedYear = event.target.value;
-        const outputDate = new Date(selectedYear, this.props.renderedMonth);
+        const outputDate = new Date(selectedYear, this.props.selectedDate.getMonth());
         this.props.setSelectedDate(outputDate);
     }
 
     handleMonthChangeButton(deltaM){
-        let month = this.props.renderedMonth + deltaM;
-        let year = this.props.renderedYear;
+        let month = this.props.selectedDate.getMonth() + deltaM;
+        let year = this.props.selectedDate.getFullYear();
         if (month > 11){
-            month = month - 12;
             year++;
         } else if (month < 0){
-            month = month + 12;
             year--;
         }
+        month = (month + 12) % 12;
         const outputDate = new Date(year,month);
         this.props.setSelectedDate(outputDate);
     }
 
     render(){
-        let firstDayOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth,1).getDay();   
-        let lengthOfMonth = new Date(this.props.renderedYear, this.props.renderedMonth+1, 0).getDate();
+        let firstDayOfMonth = new Date(this.props.selectedDate.getFullYear(), this.props.selectedDate.getMonth(),1).getDay();   
+        let lengthOfMonth = new Date(this.props.selectedDate.getFullYear(), this.props.selectedDate.getMonth()+1, 0).getDate();
         let cal= [];
         let squareNum = 0;
-        for (let rowNum = 0; rowNum<6; rowNum++){
+        for (let rowNum = 0; rowNum<(firstDayOfMonth < 5 ? 5 : 6); rowNum++){
             let row = [];
             for (let colNum = 0; colNum<7; colNum++){
                 row.push(
@@ -114,11 +138,11 @@ class Calendar extends React.Component {
         return(
             <div className='calendar'>
                 <MonthBar 
-                    month={this.props.renderedMonth}
+                    month={this.props.selectedDate.getMonth()}
                     decrementMonth={()=>this.handleMonthChangeButton(-1)}
                     incrementMonth={()=>this.handleMonthChangeButton(1)}
                     onYearChange={(e)=>this.handleOnYearChange(e)}
-                    year={this.props.renderedYear}
+                    year={this.props.selectedDate.getFullYear()}
                 />
                 <div className='cal-days'>
                     {cal}
