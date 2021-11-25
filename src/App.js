@@ -72,11 +72,10 @@ class App extends React.Component {
       }
     };
 
-    const daysIncludedFromPrevMonth = new Date(this.state.selectedDate.getFullYear(), currentMonth, 1).getDay();
-    const daysIncludedFromNextMonth = 7-(new Date(this.state.selectedDate.getFullYear(), currentMonth+1, 1).getDay());
+    const offsetFromPrevMonth = new Date(this.state.selectedDate.getFullYear(), currentMonth, 1).getDay();
 
     //TODO: test this math
-    rentals = rentals.slice(prevMonthLength-daysIncludedFromPrevMonth, prevMonthLength-daysIncludedFromPrevMonth+(6*7)+1);
+    rentals = rentals.slice(prevMonthLength-offsetFromPrevMonth, prevMonthLength-offsetFromPrevMonth+(6*7)+1);
 
     this.setState({
       rentals: rentals,
@@ -85,6 +84,7 @@ class App extends React.Component {
 
   setSelectedDate(dateObj){
     //TODO: fetch month-specific data
+    //only fetch new data if a new month/year is being accessed, not new day
     if (dateObj.getMonth() !== this.state.selectedDate.getMonth() ||
       dateObj.getFullYear() !== this.state.selectedDate.getFullYear() ){
       this.fetchDataByMonth();
@@ -95,6 +95,10 @@ class App extends React.Component {
   }
   
   render(){
+    const offsetFromPrevMonth = new Date(this.state.selectedDate.getFullYear(), this.state.selectedDate.getMonth(), 1).getDay();
+    const selectedRentalIndex = offsetFromPrevMonth + this.state.selectedDate.getDate() - 1;
+
+
     return (
       <div className="App">
         <header className="App-header">
@@ -108,6 +112,7 @@ class App extends React.Component {
           />
           <Sidebar
             selectedDate={this.state.selectedDate}
+            selectedRental={this.state.rentals[selectedRentalIndex]}
           />
         </div>
       </div>
