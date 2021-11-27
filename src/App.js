@@ -14,6 +14,7 @@ class App extends React.Component {
     }
 
     this.setSelectedDate = this.setSelectedDate.bind(this);
+    this.handleBookRental = this.handleBookRental.bind(this);
   }
 
   getRentalArrayLength(dateObj){
@@ -93,6 +94,11 @@ class App extends React.Component {
       selectedDate: dateObj,
     })
   }
+
+  handleBookRental(dateObj){
+    //TODO: POST 
+    console.log("Book rental for: " + dateObj);
+  }
   
   render(){
     const offsetFromPrevMonth = new Date(this.state.selectedDate.getFullYear(), this.state.selectedDate.getMonth(), 1).getDay();
@@ -113,6 +119,7 @@ class App extends React.Component {
           <Sidebar
             selectedDate={this.state.selectedDate}
             selectedRental={this.state.rentals[selectedRentalIndex]}
+            handleBookRental={this.handleBookRental}
           />
         </div>
       </div>
