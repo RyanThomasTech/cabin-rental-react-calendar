@@ -27,7 +27,7 @@ function DaySelect(props){
     });
 
     return(
-        <span classname="select-container">
+        <span className="select-container">
             <label for="day">Day:</label>
             <select name="day" onChange={props.onChange}>
                 {optionsDays}
@@ -51,10 +51,24 @@ function MonthSelect(props){
     )
 }
 
+function RentedToInput(props){
+    return(
+        <div>
+            <label for="RentedTo">Rented To: </label>
+            <input
+                id="RentedTo"
+                name="RentedTo"
+                onChange={props.onChange}
+            ></input>
+        </div>
+    )
+}
+
 function BookingWindow(props){
     const [selectedYear, setYear] = useState(props.selectedDate.getFullYear());
     const [selectedMonth, setMonth] = useState(props.selectedDate.getMonth());
     const [selectedDay, setDay] = useState(props.selectedDate.getDate());
+    const [inputRentedTo, setRentedTo] = useState("Guest");
 
     function handleMonthChange(e){
         setMonth(e.target.value);
@@ -68,12 +82,16 @@ function BookingWindow(props){
         setDay(e.target.value);
     }
 
+    function handleRentedToInput(e){
+        setRentedTo(e.target.value);
+    }
+
     function handleSubmitClick(){
         const newDate = new Date(selectedYear, selectedMonth, selectedDay);
 
         //confirm that booking is for a future date
         if (newDate >= props.selectedDate){
-            props.handleBookRental(newDate);
+            props.handleBookRental(newDate,inputRentedTo);
         } else {
             alert("Please select a date in the future to book your rental");
         }
@@ -88,6 +106,15 @@ function BookingWindow(props){
                 selectedMonth={selectedMonth}
                 onChange={(event)=>handleDayChange(event)}
             />
+            {
+                (new Date(selectedYear, selectedMonth, selectedDay) < props.selectedDate) && 
+                <div>Please select a future date.</div>
+            }
+            <RentedToInput onChange={(event)=>handleRentedToInput(event)}/>
+            {
+                (inputRentedTo === 'Guest') && 
+                <div>Please provide the name to whom the cabin is being rented.</div>
+            }
             <br />
             <button onClick={handleSubmitClick}>Submit</button>
         </div>

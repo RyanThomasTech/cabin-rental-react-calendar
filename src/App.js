@@ -95,9 +95,9 @@ class App extends React.Component {
     })
   }
 
-  handleBookRental(dateObj){
+  handleBookRental(dateObj, rentedTo){
     //TODO: POST 
-    console.log("Book rental for: " + dateObj);
+    console.log("Book rental for: " +rentedTo + " on " + dateObj);
   }
   
   render(){
