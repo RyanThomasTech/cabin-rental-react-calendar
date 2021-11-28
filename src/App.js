@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.css';
 import Calendar from './Calendar';
-import './Calendar.css';
 import Sidebar from './Sidebar';
 
 class App extends React.Component {
@@ -14,7 +13,8 @@ class App extends React.Component {
     }
 
     this.setSelectedDate = this.setSelectedDate.bind(this);
-    this.handleBookRental = this.handleBookRental.bind(this);
+    this.POSTRental = this.POSTRental.bind(this);
+    this.DELETERental = this.DELETERental.bind(this);
   }
 
   getRentalArrayLength(dateObj){
@@ -27,10 +27,25 @@ class App extends React.Component {
   }
 
   componentDidMount(){
-    this.fetchDataByMonth();
+    this.GETRentals();
   }
 
-  fetchDataByMonth(/*dateObj*/){
+  setSelectedDate(dateObj){
+    //TODO: fetch month-specific data
+    //only fetch new data if a new month/year is being accessed, not new day
+    if (dateObj.getMonth() !== this.state.selectedDate.getMonth() ||
+      dateObj.getFullYear() !== this.state.selectedDate.getFullYear() ){
+      console.log("getting rentals");
+      this.GETRentals();
+    }
+    console.log("setting date");
+    this.setState({
+      selectedDate: dateObj,
+    })
+  }
+
+
+  GETRentals(/*dateObj*/){
     //TODO: grab rentals by specific timeframe only
     fetch('http://localhost:8080/rentals')
     .then((response) => {
@@ -78,26 +93,57 @@ class App extends React.Component {
     //TODO: test this math
     rentals = rentals.slice(prevMonthLength-offsetFromPrevMonth, prevMonthLength-offsetFromPrevMonth+(6*7)+1);
 
+    console.log("adding rentals to state.");
+
     this.setState({
       rentals: rentals,
     })
   }
 
-  setSelectedDate(dateObj){
-    //TODO: fetch month-specific data
-    //only fetch new data if a new month/year is being accessed, not new day
-    if (dateObj.getMonth() !== this.state.selectedDate.getMonth() ||
-      dateObj.getFullYear() !== this.state.selectedDate.getFullYear() ){
-      this.fetchDataByMonth();
-    }
-    this.setState({
-      selectedDate: dateObj,
+  POSTRental(dateObj, rentedTo){
+    const id = parseInt(dateObj.getFullYear().toString()+dateObj.getMonth().toString().padStart(2,0)+dateObj.getDate().toString().padStart(2,0));
+    const newRental={id:id,date:dateObj,rentedTo:rentedTo,rentedBy:'Ryan'};
+    fetch('http://localhost:8080/rentals',{
+      method: 'POST',
+      headers: {
+        'Content-type':'application/json',
+      },
+      body: JSON.stringify(newRental)
     })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw response;
+    })
+    .then((data) => {
+      console.log("Success: " + data)
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
+    //console.log("Book rental for: " +rentedTo + " on " + dateObj);
   }
 
-  handleBookRental(dateObj, rentedTo){
-    //TODO: POST 
-    console.log("Book rental for: " +rentedTo + " on " + dateObj);
+  DELETERental(rentalObj){
+    const rentalDate = new Date(rentalObj.date);
+    const id = parseInt(rentalDate.getFullYear().toString()+rentalDate.getMonth().toString().padStart(2,0)+rentalDate.getDate().toString().padStart(2,0));
+    fetch('http://localhost:8080/rentals/' + id.toString(),{
+      method: 'DELETE',
+      body: JSON.stringify(rentalObj)
+    })
+    .then((response) => {
+      if (response.ok) {
+        return response;
+      }
+      throw response;
+    })
+    .then((data) => {
+      console.log("Success: " + data)
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    });
   }
   
   render(){
@@ -117,9 +163,10 @@ class App extends React.Component {
             rentals={this.state.rentals}
           />
           <Sidebar
-            selectedDate={this.state.selectedDate}
+            renderedDate={this.state.selectedDate}
             selectedRental={this.state.rentals[selectedRentalIndex]}
-            handleBookRental={this.handleBookRental}
+            POSTRental={this.POSTRental}
+            DELETERental={this.DELETERental}
           />
         </div>
       </div>
